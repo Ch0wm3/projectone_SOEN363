@@ -47,10 +47,6 @@ CREATE TABLE IF NOT EXISTS Triage_and_Assessment (
     FOREIGN KEY (admission_identifier) REFERENCES Admission(admission_identifier)
 );
 
--- Create table Care Pathway
--- Not a stored entity: the care pathway is a routing decision derived from
--- Triage_and_Assessment / Unit_Stay data, so no dedicated table is required.
-
 -- Create table for Clinical_Note (Emergency Depertment Assessment)
 CREATE TABLE IF NOT EXISTS Clinical_Note (
     clinical_note_identifier INT PRIMARY KEY,
