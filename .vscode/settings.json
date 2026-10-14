@@ -1,0 +1,16 @@
+{
+    // Please add your PostgreSQL connection details below in order to connect to your database
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "username": "teamproject",
+            "database": "soen363_project",
+            "name": "SOEN363 Hospital",
+            "password": ""
+        }
+    ]
+}
