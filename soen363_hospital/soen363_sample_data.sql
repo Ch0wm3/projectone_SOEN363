@@ -2,6 +2,7 @@
 -- All patients, staff, addresses and phone numbers are completely fictional
 -- and were generated for educational purposes only. No real person is represented.
 -- Run after soen363_sql_data.sql.
+-- This file contains sample generated from Claude AI agent which was requested for the assignement
 
 INSERT INTO Patient VALUES
 (1, 100200301, 'Marie Tremblay',   '1961-04-12', 'Female', '123 Rue Exemple, Montreal, QC', '5145550101', 'Luc Tremblay (spouse) 5145550102', 'Alive'),
