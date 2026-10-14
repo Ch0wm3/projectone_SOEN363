@@ -7,7 +7,7 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "username": "teamproject",
+            "username": "thanhmac",
             "database": "soen363_project",
             "name": "SOEN363 Hospital",
             "password": ""
