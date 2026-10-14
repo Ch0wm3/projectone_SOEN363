@@ -80,6 +80,7 @@ INSERT INTO Admission (
 (16, 6, '2026-09-02 16:20', 'Right upper abdominal pain', 'Emergency', 'Walk-in', 'Fictional Plan A', 'Abdominal tenderness and nausea', 'Dr. Mira Patel', 'Discharged'),
 (17, 2, '2026-09-18 08:00', 'Sepsis with respiratory distress', 'Emergency', 'Emergency Department', 'Fictional Plan B', 'Febrile with oxygen requirement', 'Dr. Jonah Reed', 'Discharged');
 
+-- Thanh Notes: triage_priority_level is evaluated in 3 levels, with 'Level 1' being the highest priority and 'Level 3' being the lowest.
 INSERT INTO Triage_and_Assessment (
     assessment_identifier, admission_identifier, assessment_date_and_time,
     assessment_type, assessment_results, healthcare_professional_in_charge,

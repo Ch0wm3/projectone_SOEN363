@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS Triage_and_Assessment (
     FOREIGN KEY (admission_identifier) REFERENCES Admission(admission_identifier)
 );
 
--- Create table for Clinical_Note (Emergency Depertment Assessment)
+-- Create table for Clinical_Note (Emergency Department Assessment)
 CREATE TABLE IF NOT EXISTS Clinical_Note (
     clinical_note_identifier INT PRIMARY KEY,
     admission_identifier INT,
