@@ -54,3 +54,27 @@ WHERE a.admission_source = 'Emergency Department'
 -- after their initial admission.
   AND u.unit_type IN ('ICU', 'CCU')
   AND u.entry_date_and_time > a.admission_date_and_time;
+
+
+
+-- Q8: Retrieve the most frequently assigned primary ICD-9 diagnosis among admissions that included at least one ICU or CCU stay.
+
+SELECT d.icd_9_code,
+       d.official_diagnosis_title,
+-- Thanh Notes: In order to prevent duplication
+       STRING_AGG(DISTINCT u.unit_type, ', ') AS unit_types,
+       COUNT(DISTINCT dr.admission_identifier) AS assignment_count
+FROM Diagnostic_Record dr
+JOIN ICD9_Dictionary d
+    ON dr.icd_9_code = d.icd_9_code
+JOIN Unit_Stay u
+    ON dr.admission_identifier = u.admission_identifier
+-- Thanh Notes: Only consider primary diagnoses.
+WHERE dr.diagnosis_type = 'Primary'
+-- Thanh Notes: Filter for admissions with ICU or CCU stays.
+  AND u.unit_type IN ('ICU', 'CCU')
+GROUP BY d.icd_9_code, d.official_diagnosis_title
+ORDER BY assignment_count DESC
+-- Thanh Notes: Return the most frequently assigned diagnosis.
+LIMIT 1;
+
