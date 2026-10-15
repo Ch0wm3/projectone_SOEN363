@@ -1,7 +1,5 @@
 -- Data sources and generation notes
--- Source for Patient, Admission, Triage_and_Assessment, Clinical_Note,
--- Diagnostic_Order, Radiology_Examination, Diagnostic_Record,
--- Surgical_Procedure, Unit_Stay, General_Ward, and Discharge_Record:
+-- Source for the hospital entities in soen363_sql_data.sql:
 -- AI-generated fictional synthetic data for educational use. No MIMIC-III data
 -- or real patient information is included. ICD-9 codes are used as labels for
 -- fictional cases; the accompanying descriptions are educational summaries.
@@ -18,11 +16,31 @@
 -- ids, references, dates, and query scenarios were reviewed for
 -- consistency. No external patient data was imported or transformed.
 -- Import method: from soen363_hospital/, execute
--- psql -d <database> -f soen363_sql_data.sql -f soen363_sample_data.sql.
+-- psql -v ON_ERROR_STOP=1 --single-transaction -d <database> -f soen363_sql_data.sql -f soen363_sample_data.sql.
+
+INSERT INTO Healthcare_Professional (professional_id, name, role) VALUES
+(1, 'Dr. Mira Patel', 'Physician'),
+(2, 'Dr. Jonah Reed', 'Physician'),
+(3, 'Dr. Elena Roy', 'Physician'),
+(4, 'Dr. Rowan Ellis', 'Physician'),
+(5, 'Dr. Alex Chen', 'Physician'),
+(6, 'Nurse Ren Lee', 'Nurse'),
+(7, 'Nurse Kai Morgan', 'Nurse'),
+(8, 'Tech Rowan Kim', 'Radiology Technician'),
+(9, 'Tech Alex Noor', 'Radiology Technician');
+
+INSERT INTO Hospital_Unit (unit_id, unit_type) VALUES
+(1, 'Emergency'),
+(2, 'CCU'),
+(3, 'MICU'),
+(4, 'General Ward'),
+(5, 'ICU'),
+(6, 'Surgery'),
+(7, 'SICU');
 
 INSERT INTO Patient (
-    patient_id, health_insurance_number, full_name, date_of_birth,
-    gender, address, telephone_number, emergency_contact_information, life_status
+    patient_id, full_name, health_insurance_number, date_of_birth,
+    gender, address, telephone_number, emergency_contact_info, life_status
 ) VALUES
 (1, 710000001, 'Ava Laurent',       '1968-04-12', 'Female', '101 Fictional Rue, Montreal, QC', '5145551001', 'Noah Laurent (spouse), 5145551101', 'Alive'),
 (2, 710000002, 'Noah Chen',         '1954-09-30', 'Male',   '202 Sample Avenue, Laval, QC',    '4505551002', 'Mei Chen (daughter), 4505551102', 'Alive'),
@@ -82,7 +100,7 @@ INSERT INTO Admission (
 
 -- Anais Note: based on the implementation of Query 1, priority_level should go from low to high. 
 
-INSERT INTO Triage_and_Assessment (
+INSERT INTO Triage_Assessment (
     assessment_id, admission_id, assessment_date_time,
     assessment_type, assessment_results, healthcare_professional_in_charge,
     blood_pressure, heart_rate, respiratory_rate, body_temperature,
@@ -164,8 +182,8 @@ INSERT INTO Diagnostic_Order (
 
 
 -- Anais Note: referencing the admission_id gives the patient id 
-INSERT INTO Radiology_Examination (
-    examination_id, diagnostic_order_id,
+INSERT INTO Radiology_Report (
+    examination_id, diagnostic_order_id, patient_id,
     admission_id, examination_type, examination_date_time,
     body_area_examined, referring_physician, radiology_technician,
     examination_status, medical_images_link
@@ -221,7 +239,7 @@ INSERT INTO Diagnosis_Record (
 
 -- Anais Note: referencing the admission_id gives the patient id 
 INSERT INTO Surgical_Procedure (
-    surgical_procedure_id, admission_id,
+    surgical_procedure_id, patient_id, admission_id,
     procedure_type, procedure_date_time, performing_surgeon,
     procedure_status, procedure_notes
 ) VALUES
