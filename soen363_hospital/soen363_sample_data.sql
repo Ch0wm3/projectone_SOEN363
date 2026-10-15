@@ -15,13 +15,13 @@
 -- no-radiology patients, emergency triage, unit transfers, critical-care stays
 -- of different lengths, surgeries, radiology, secondary diagnoses, and a death."
 -- Cleaning/transformation: records were generated directly for this schema;
--- identifiers, references, dates, and query scenarios were reviewed for
+-- ids, references, dates, and query scenarios were reviewed for
 -- consistency. No external patient data was imported or transformed.
 -- Import method: from soen363_hospital/, execute
 -- psql -d <database> -f soen363_sql_data.sql -f soen363_sample_data.sql.
 
 INSERT INTO Patient (
-    patient_identifier, health_insurance_number, full_name, date_of_birth,
+    patient_id, health_insurance_number, full_name, date_of_birth,
     gender, address, telephone_number, emergency_contact_information, life_status
 ) VALUES
 (1, 710000001, 'Ava Laurent',       '1968-04-12', 'Female', '101 Fictional Rue, Montreal, QC', '5145551001', 'Noah Laurent (spouse), 5145551101', 'Alive'),
@@ -57,9 +57,9 @@ INSERT INTO ICD9_Dictionary (
 ('401.9',  'Essential hypertension, unspecified', 'High blood pressure without further specification', 'Circulatory');
 
 INSERT INTO Admission (
-    admission_identifier, patient_identifier, admission_date_and_time,
-    reason_for_the_visit, admission_type, admission_source, insurance_information,
-    patient_current_condition, name_of_the_admitting_healthcare_professional,
+    admission_id, patient_id, admission_date_time,
+    reason_for_visit, admission_type, admission_source, insurance_info,
+    patient_current_condition, admitting_healthcare_professional_name,
     final_admission_status
 ) VALUES
 (1,  1, '2026-01-05 08:15', 'Severe chest pain', 'Emergency', 'Emergency Department', 'Fictional Plan A', 'Chest pain and diaphoresis', 'Dr. Mira Patel', 'Discharged'),
@@ -80,9 +80,10 @@ INSERT INTO Admission (
 (16, 6, '2026-09-02 16:20', 'Right upper abdominal pain', 'Emergency', 'Walk-in', 'Fictional Plan A', 'Abdominal tenderness and nausea', 'Dr. Mira Patel', 'Discharged'),
 (17, 2, '2026-09-18 08:00', 'Sepsis with respiratory distress', 'Emergency', 'Emergency Department', 'Fictional Plan B', 'Febrile with oxygen requirement', 'Dr. Jonah Reed', 'Discharged');
 
--- Thanh Notes: triage_priority_level is evaluated in 3 levels, with 'Level 1' being the highest priority and 'Level 3' being the lowest.
+-- Anais Note: based on the implementation of Query 1, priority_level should go from low to high. 
+
 INSERT INTO Triage_and_Assessment (
-    assessment_identifier, admission_identifier, assessment_date_and_time,
+    assessment_id, admission_id, assessment_date_time,
     assessment_type, assessment_results, healthcare_professional_in_charge,
     blood_pressure, heart_rate, respiratory_rate, body_temperature,
     oxygen_saturation, pain_level, reported_symptoms, known_allergies,
@@ -107,7 +108,7 @@ INSERT INTO Triage_and_Assessment (
 (17,17, '2026-09-18 08:10', 'Triage', 'Sepsis and respiratory distress', 'Nurse Ren Lee', '92/58', 118, 28, 39.0, 89.0, 3, 'Fever, chills, shortness of breath', 'Sulfa drugs', 'Metformin', 'Level 1');
 
 INSERT INTO Clinical_Note (
-    clinical_note_identifier, admission_identifier, note_type, note_date_and_time,
+    clinical_note_id, admission_id, note_type, note_date_time,
     patients_symptoms, physical_examination, initial_clinical_findings,
     suspected_medical_condition, planned_diagnostic_examinations,
     initial_treatment_plan, note_content
@@ -139,9 +140,9 @@ INSERT INTO Clinical_Note (
 (25,17, 'Discharge Summary', '2026-09-28 09:45', 'Breathing improved', 'Stable on room air', 'Infection resolving', 'Sepsis', 'Family physician follow-up', 'Complete medications and return if symptoms recur', 'Recovery was stable at discharge.');
 
 INSERT INTO Diagnostic_Order (
-    diagnostic_order_identifier, patient_identifier, admission_identifier,
-    requesting_physician, requested_examination, request_date_and_time,
-    clinical_reason_for_the_examination, priority, order_status
+    diagnostic_order_id, patient_id, admission_id,
+    requesting_physician, requested_examination, request_date_time,
+    clinical_reason_for_examination, priority, order_status
 ) VALUES
 (1,  1, 1,  'Dr. Mira Patel',  'Chest X-ray',       '2026-01-05 08:45', 'Assess chest pain', 'Urgent', 'Completed'),
 (2,  1, 2,  'Dr. Jonah Reed', 'Echocardiogram',    '2026-03-17 14:30', 'Assess cardiac function', 'High', 'Completed'),
@@ -161,11 +162,13 @@ INSERT INTO Diagnostic_Order (
 (16, 6,16,  'Dr. Mira Patel',  'Abdominal ultrasound','2026-09-02 16:50', 'Assess right upper quadrant pain', 'High', 'Completed'),
 (17, 2,17,  'Dr. Jonah Reed', 'Chest X-ray',       '2026-09-18 08:30', 'Assess respiratory compromise', 'Urgent', 'Completed');
 
+
+-- Anais Note: referencing the admission_id gives the patient id 
 INSERT INTO Radiology_Examination (
-    examination_identifier, diagnostic_order_identifier, patient_identifier,
-    admission_identifier, examination_type, examination_date_and_time,
+    examination_id, diagnostic_order_id,
+    admission_id, examination_type, examination_date_time,
     body_area_examined, referring_physician, radiology_technician,
-    examination_status, link_to_the_resulting_medical_images
+    examination_status, medical_images_link
 ) VALUES
 (1,  1,  1, 1,  'X-ray',      '2026-01-05 09:05', 'Chest', 'Dr. Mira Patel',  'Tech Rowan Kim', 'Completed', 'https://example.org/synthetic-images/exam-1'),
 (2,  2,  1, 2,  'Ultrasound', '2026-03-17 15:00', 'Heart', 'Dr. Jonah Reed', 'Tech Alex Noor', 'Completed', 'https://example.org/synthetic-images/exam-2'),
@@ -185,9 +188,9 @@ INSERT INTO Radiology_Examination (
 (16,16,  6,16,  'Ultrasound', '2026-09-02 17:20', 'Abdomen', 'Dr. Mira Patel', 'Tech Alex Noor', 'Completed', 'https://example.org/synthetic-images/exam-16'),
 (17,17,  2,17,  'X-ray',      '2026-09-18 09:00', 'Chest', 'Dr. Jonah Reed', 'Tech Rowan Kim', 'Completed', 'https://example.org/synthetic-images/exam-17');
 
-INSERT INTO Diagnostic_Record (
-    diagnosis_identifier, patient_identifier, admission_identifier, icd_9_code,
-    diagnosis_date_and_time, diagnosis_type, diagnosing_physician
+INSERT INTO Diagnosis_Record (
+    diagnosis_id, patient_id, admission_id, icd_9_code,
+    diagnosis_date_time, diagnosis_type, diagnosing_physician
 ) VALUES
 (1,  1, 1,  '410.91', '2026-01-05 09:30', 'Primary',   'Dr. Mira Patel'),
 (2,  1, 1,  '401.9',  '2026-01-05 10:00', 'Secondary', 'Dr. Mira Patel'),
@@ -215,9 +218,11 @@ INSERT INTO Diagnostic_Record (
 (24, 2,17,  '038.9',  '2026-09-18 10:00', 'Primary',   'Dr. Jonah Reed'),
 (25, 2,17,  '518.81', '2026-09-18 10:15', 'Secondary', 'Dr. Jonah Reed');
 
+
+-- Anais Note: referencing the admission_id gives the patient id 
 INSERT INTO Surgical_Procedure (
-    surgical_procedure_identifier, patient_identifier, admission_identifier,
-    procedure_type, procedure_date_and_time, performing_surgeon,
+    surgical_procedure_id, admission_id,
+    procedure_type, procedure_date_time, performing_surgeon,
     procedure_status, procedure_notes
 ) VALUES
 (1,  1, 1,  'Percutaneous coronary intervention', '2026-01-05 13:00', 'Dr. Rowan Ellis', 'Completed', 'Fictional coronary stent placement; stable afterward.'),
@@ -228,8 +233,8 @@ INSERT INTO Surgical_Procedure (
 (6,  6,16,  'Laparoscopic cholecystectomy',       '2026-09-03 10:00', 'Dr. Alex Chen',   'Completed', 'Uncomplicated fictional gallbladder removal.');
 
 INSERT INTO Unit_Stay (
-    unit_stay_identifier, admission_identifier, unit_type, ward_and_room,
-    bed_number, entry_date_and_time, exit_date_and_time, responsible_physician,
+    unit_stay_id, admission_id, unit_type, ward_and_room,
+    bed_number, entry_date_time, exit_date_time, responsible_physician,
     reason_for_transfer
 ) VALUES
 (1,  1, 'Emergency',     'ER-A / Room 3',   '3',  '2026-01-05 08:15', '2026-01-05 10:00', 'Dr. Mira Patel',  'Initial emergency assessment'),
@@ -279,7 +284,7 @@ INSERT INTO Unit_Stay (
 (45,17, 'General Ward',  'Ward 4C / Room 2','2C', '2026-09-25 10:30', '2026-09-28 09:00', 'Dr. Jonah Reed', 'Stable for step-down care');
 
 INSERT INTO General_Ward (
-    progress_note_identifier, unit_stay_identifier, nursing_monitoring_notes,
+    progress_note_id, unit_stay_id, nursing_monitoring_notes,
     physician_follow_up_examination, medications_and_treatments_administered,
     progress_notes, additional_tests_requested, recovery_evaluation
 ) VALUES
@@ -300,7 +305,7 @@ INSERT INTO General_Ward (
 (15,45, 'Vitals stable', 'Infection responding to treatment', 'Antibiotics completed', 'Breathing comfortably', 'None', 'Recovered sufficiently for discharge');
 
 INSERT INTO Discharge_Record (
-    discharge_record_identifier, admission_identifier, discharge_date_and_time,
+    discharge_record_id, admission_id, discharge_date_time,
     discharge_destination, patients_condition_at_discharge, primary_icd_9_diagnosis,
     secondary_icd_9_diagnoses, prescribed_medications, follow_up_instructions,
     scheduled_follow_up_appointments, responsible_physician
