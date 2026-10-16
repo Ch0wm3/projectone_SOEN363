@@ -69,7 +69,8 @@ CREATE TABLE IF NOT EXISTS Triage_Assessment (
     reported_symptoms VARCHAR(255),
     known_allergies VARCHAR(255),
     current_medications VARCHAR(255),
-    triage_priority_level VARCHAR(50),
+    triage_priority_level VARCHAR(10)
+        CHECK (triage_priority_level IN ('Low', 'Medium', 'High')),
     FOREIGN KEY (admission_id) REFERENCES Admission(admission_id),
     FOREIGN KEY (healthcare_professional_in_charge) REFERENCES Healthcare_Professional(professional_id)
 );
