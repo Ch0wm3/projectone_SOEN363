@@ -1,7 +1,7 @@
 -- Create table for Healthcare Professional
 CREATE TABLE IF NOT EXISTS Healthcare_Professional (
     professional_id INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
     role VARCHAR(50) NOT NULL
 );
 
@@ -57,7 +57,6 @@ CREATE TABLE IF NOT EXISTS Triage_Assessment (
     assessment_id INT PRIMARY KEY,
     admission_id INT NOT NULL,
     assessment_date_time TIMESTAMP,
-    assessment_type VARCHAR(50),
     assessment_results VARCHAR(255),
     healthcare_professional_in_charge INT NOT NULL,
     blood_pressure VARCHAR(10),
