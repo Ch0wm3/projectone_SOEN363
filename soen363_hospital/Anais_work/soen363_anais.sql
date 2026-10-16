@@ -27,7 +27,7 @@ ORDER BY admission_date, p.full_name;
 
 
 
------------------ Q2: Find all patients who had more than three hospital admissions. Display the patient identifier, patient name, and total number of admissions ------------------------
+----------------- Q2: Find all patients who had more than three hospital admissions. Display the patient id, patient name, and total number of admissions ------------------------
 
 -- Tables needed to retrieve the patient's id, patient's name, and total number of admissions: Patient and Admission
 -- Columns needed: patient_id from Patient (PK) and Admission (FK),  full_name from Patient, admission_id from Admission
@@ -93,3 +93,31 @@ WHERE a.final_admission_status = 'Discharged'
 ORDER BY admission_date, p.full_name;
 
 ----------------- Q4: List all patients who had both a radiology examination and a surgical procedure during the same admission ------------------------
+
+-- Tables needed to retrieve patient ids and names for admissions that
+-- had both a radiology examination and a surgical procedure: Patient, Admission,
+-- Radiology_Examination, and Surgical_Procedure
+-- Columns needed:
+--   - patient_id from Patient (PK), Admission, Radiology_Examination, and Surgical_Procedure
+--   - full_name from Patient
+--   - admission_id from Admission (PK), Radiology_Examination, and
+--     Surgical_Procedure
+
+-- What we want to display in the final result: each qualifying patient's id and name.
+-- DISTINCT prevents duplicate patients when an admission has multiple procedures
+SELECT DISTINCT
+    p.patient_id,
+    p.full_name
+FROM Patient AS p
+-- Match each patient to their admissions using patient_id.
+JOIN Admission AS a
+    ON a.patient_id = p.patient_id
+-- Match radiology examinations to the admission in which they occurred.
+JOIN Radiology_Examination AS r
+    ON r.admission_id = a.admission_id
+-- Match surgical procedures to the same admission. Requiring both joins means
+-- the admission must have at least one radiology examination and one surgery.
+JOIN Surgical_Procedure AS sp
+    ON sp.admission_id = a.admission_id
+-- Sort the resulting patient list by name.
+ORDER BY p.full_name;
